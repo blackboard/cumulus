@@ -47,9 +47,19 @@ from boto.ec2 import autoscale
 
 from mako.template import Template
 from mako.lookup import TemplateLookup
-lookup = TemplateLookup(directories=['../html'])
+lookup = TemplateLookup(directories=['templates'])
 
-from settings import AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, DEFAULTS, CW_MAX_DATA_POINTS, CW_MIN_PERIOD
+from settings import DEFAULTS, CW_MAX_DATA_POINTS, CW_MIN_PERIOD
+
+# def merge_data(data):
+#     merged = []
+#
+#     current_date = None
+#     for row in data:
+#         if current_date != row[0]:
+#
+#
+#     return merged;
 
 def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_secret_access_key=None):
     """
@@ -98,6 +108,8 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
     
     if 'timezone' in qa:
         current_timezone = timezone(qa['timezone'])
+
+    data_map = {}
 
     # Parse, build, and run each CloudWatch query
     cloudwatch_opts = ['unit', 'metric', 'namespace', 'statistics', 'period', 'dimensions', 'prefix', 'calc_rate', 'region']
@@ -148,6 +160,13 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
             utc_dt = utc.localize(d[u'Timestamp'])
             loc_dt = utc_dt.astimezone(current_timezone)
             d['Timestamp'] = loc_dt
+
+            try:
+                data_obj = data_map[loc_dt]
+            except KeyError:
+                data_obj = d
+                data_map[loc_dt] = d
+
             # If desired, convert Sum to a per-second Rate
             if args['calc_rate'] == True and 'Sum' in args['statistics']: d.update({u'Rate': d[u'Sum']/args['period']})
             # Change key names
@@ -155,10 +174,10 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
             keys.remove('Timestamp')
             for k in keys:
                 new_k = args['prefix']+k
-                d[new_k] = d[k]
+                data_obj[new_k] = d[k]
                 del d[k]
     
-        rs.extend(results)
+        # rs.extend(results)
         
         # Build data description and columns to be return
         description[args['prefix']+'Samples'] = ('number', args['prefix']+'Samples')
@@ -171,7 +190,8 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
             columns.append(args['prefix']+stat)       
     
     # Sort data and present    
-    data = sorted(rs, key=operator.itemgetter(u'Timestamp'))
+    data = sorted(data_map.values(), key=operator.itemgetter(u'Timestamp'))
+
     data_table = gviz_api.DataTable(description)
     data_table.LoadData(data)
 
@@ -203,6 +223,16 @@ def get_asg_metrics(asg, metric_name, region, namespace='Learn/Instance', statis
     return data
 
 
+class Script(object):
+    def index(self):
+        asc = autoscale.connect_to_region("us-east-1")
+        groups = asc.get_all_groups()
+
+        template = lookup.get_template('cumulus.js')
+        return template.render(groups=groups)
+
+    index.exposed = True
+
 class Data(object):
     def index(self, qs, tqx):
         cloudviz_query = simplejson.loads(qs)
@@ -222,6 +252,7 @@ class Data(object):
 
 class Root(object):
     data = Data()
+    js = Script()
 
     def index(self):
         group = 'mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK'
@@ -235,27 +266,3 @@ class Root(object):
 
 
 cherrypy.quickstart(Root())
-
-# def main():
-#     # Parse the query string
-#     fs = cgi.FieldStorage()
-#     cloudviz_query = simplejson.loads(fs.getvalue('qs'))
-#
-#     # Convert tqx to dict; tqx is a set of colon-delimited key/value pairs separated by semicolons
-#     tqx = {}
-#     for s in fs.getvalue('tqx').split(';'):
-#         key = s.split(':')[0]
-#         value = s.split(':')[1]
-#         tqx.update({key:value})
-#
-#     # Set reqId so we know who to send data back to
-#     request_id = tqx['reqId']
-#
-#     results = get_cloudwatch_data(cloudviz_query, request_id, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
-#     print "Content-type: text/plain"
-#     print
-#     print results
-#
-# if __name__ == "__main__":
-#     status = main()
-#     sys.exit(status)
