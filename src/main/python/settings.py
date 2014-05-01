@@ -22,8 +22,8 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # Uncomment and set to your Amazon credentials:
-AWS_ACCESS_KEY_ID = "AKIAJ43KYETRXUDPLSJA"
-AWS_SECRET_ACCESS_KEY = "PIO0GyhiBs8ytKdqK9HL++ata+1gsImkhjIGv1rR"
+AWS_ACCESS_KEY_ID = ""
+AWS_SECRET_ACCESS_KEY = ""
 
 # Default values to use if a given parameter is not passed
 DEFAULTS = {'calc_rate': True,

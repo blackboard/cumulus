@@ -132,8 +132,8 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
         
         # Use AWS keys if provided, otherwise just let the boto look it up
         if aws_access_key_id and aws_secret_access_key:
-            c = boto.ec2.cloudwatch.connect_to_region(  args['region'], aws_access_key_id=AWS_ACCESS_KEY_ID, 
-                                                        aws_secret_access_key=AWS_SECRET_ACCESS_KEY, is_secure=False)
+            c = boto.ec2.cloudwatch.connect_to_region(  args['region'], aws_access_key_id=aws_access_key_id,
+                                                        aws_secret_access_key=aws_secret_access_key, is_secure=False)
         else:
             c = boto.ec2.cloudwatch.connect_to_region(args['region'], is_secure=False)
         
@@ -214,7 +214,7 @@ class Data(object):
             tqx_hash.update({key:value})
 
         request_id = tqx_hash["reqId"]
-        results = get_cloudwatch_data(cloudviz_query, request_id, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+        results = get_cloudwatch_data(cloudviz_query, request_id)
         cherrypy.response.headers['Content-Type'] = "text/plain"
         return results
 
@@ -225,7 +225,7 @@ class Root(object):
 
     def index(self):
         group = 'mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK'
-        asc = autoscale.connect_to_region("us-east-1", aws_access_key_id=AWS_ACCESS_KEY_ID, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
+        asc = autoscale.connect_to_region("us-east-1")
         instances = asc.get_all_groups([group])[0].instances
 
         template = lookup.get_template('cumulus.html')
