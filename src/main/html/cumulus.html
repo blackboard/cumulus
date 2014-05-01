@@ -1,0 +1,116 @@
+<html>
+<!--
+Copyright 2010 Bizo, Inc. (Mike Babineau <michael.babineau@gmail.com>)
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+  <head>
+    <title>Instance CPU</title>
+    <meta http-equiv="refresh" content="300" >
+    <script type="text/javascript" src="http://www.google.com/jsapi" ></script>
+    <script type=text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+        google.load('visualization', '1.1', {packages: ['annotationchart', 'corechart']});
+    </script>
+    <script type="text/javascript">
+        var visualization;
+        
+        function drawInstanceChart(namespace, metric, unit, handler) {
+            var qa = {  
+                        "namespace": namespace,       // CloudWatch namespace (string
+                        "metric": metric,   // CloudWatch metric (string)
+                        "unit": unit,            // CloudWatch unit (string)
+                        "statistics": ["Average"],      // CloudWatch statistics (list of strings)
+                        "period": 600,                // CloudWatch period (int)
+                        "cloudwatch_queries":         // (list of dictionaries)
+                        [
+                            % for instance in instances:
+                            {
+                                "prefix": "${instance.instance_id} ",   // label prefix for associated data sets (string)
+                                "dimensions": { "InstanceId": "${instance.instance_id}"} // CloudWatch dimensions (dictionary)
+                            },
+                            % endfor
+                        ]
+                     };
+
+            var qs = JSON.stringify(qa);
+            var url = 'http://' + window.location.host + '/data?qs=' + qs;
+            var query = new google.visualization.Query(url);
+            query.send(handler);
+        }
+
+        function drawGroupChart(namespace, metric, unit, handler) {
+            var qa = {
+                        "namespace": namespace,       // CloudWatch namespace (string
+                        "metric": metric,   // CloudWatch metric (string)
+                        "unit": unit,            // CloudWatch unit (string)
+                        "statistics": ["Average"],      // CloudWatch statistics (list of strings)
+                        "period": 600,                // CloudWatch period (int)
+                        "cloudwatch_queries":         // (list of dictionaries)
+                        [
+                            {
+                                "prefix": "",   // label prefix for associated data sets (string)
+                                "dimensions": { "AutoScalingGroupName": "${group}"} // CloudWatch dimensions (dictionary)
+                            }
+                        ]
+                     };
+
+            var qs = JSON.stringify(qa);
+            var url = 'http://' + window.location.host + '/data?qs=' + qs;
+            var query = new google.visualization.Query(url);
+            query.send(handler);
+        }
+
+        function handleProcessingTime(response) {
+            if (response.isError()) {
+                return;
+            }
+        
+            var data = response.getDataTable();
+            visualization = new google.visualization.AnnotationChart(document.getElementById('processingTime'));
+            visualization.draw(data, {  'displayAnnotations': false,
+                                        'displayZoomButtons': false,
+                                        'min': 0,
+                                        'allValuesSuffix': 'ms'})
+        }
+
+        function handleThreads(response) {
+            if (response.isError()) {
+                return;
+            }
+
+            var data = response.getDataTable();
+            visualization = new google.visualization.AnnotationChart(document.getElementById('threads'));
+            visualization.draw(data, {  'displayAnnotations': false,
+                                        'displayZoomButtons': false,
+                                        'min': 0,
+                                        'max': 1,
+                                        'allValuesSuffix': '%'})
+        }
+
+        function drawCharts() {
+            drawInstanceChart("Learn/Instance", "AverageRequestProcessingTime", "Milliseconds", handleProcessingTime);
+            //drawGroupChart("Learn/Auto Scaling", "GroupRequestThreadUtilization", "Percent", handleThreads);
+            drawInstanceChart("Learn/Instance", "RequestThreadUtilization", "Percent", handleThreads);
+        }
+
+        google.setOnLoadCallback(drawCharts);
+    </script>
+  </head>
+  <body style="font-family: Arial;border: 0 none;">
+    <h4>Average Request Processing Time</h4>
+    <div id="processingTime" style="width: 600px; height: 300px;"></div>
+    <h4>Request Thread Utilization</h4>
+    <div id="threads" style="width: 600px; height: 300px;"></div>
+  </body>
+</html>
