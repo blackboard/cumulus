@@ -229,6 +229,7 @@ class Script(object):
         groups = asc.get_all_groups()
 
         template = lookup.get_template('cumulus.js')
+        cherrypy.response.headers['Content-Type'] = "text/javascript"
         return template.render(groups=groups)
 
     index.exposed = True
@@ -255,12 +256,8 @@ class Root(object):
     js = Script()
 
     def index(self):
-        group = 'mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK'
-        asc = autoscale.connect_to_region("us-east-1")
-        instances = asc.get_all_groups([group])[0].instances
-
         template = lookup.get_template('cumulus.html')
-        return template.render(instances=instances, group=group)
+        return template.render()
 
     index.exposed = True
 

@@ -57,3 +57,24 @@ function drawGroupChart(namespace, metric, statistics, unit, group, handler) {
     var query = new google.visualization.Query(url);
     query.send(handler);
 }
+
+function registerInstanceChart(elementId, group, options) {
+   var container = document.getElementById(elementId);
+
+   var handler = function(response) {
+        if (response.isError()) {
+            return;
+        }
+
+        var data = response.getDataTable();
+        var visualization = new google.visualization.AnnotationChart(container);
+        visualization.draw(data, options);
+    }
+
+    drawInstanceChart(container.getAttribute("cumulus:namespace"),
+                      container.getAttribute("cumulus:metric"),
+                      container.getAttribute("cumulus:statistics").split(","),
+                      container.getAttribute("cumulus:unit"),
+                      group,
+                      handler);
+}

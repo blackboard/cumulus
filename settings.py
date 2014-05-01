@@ -30,7 +30,7 @@ DEFAULTS = {'calc_rate': True,
             # 'period': 60,
             # 'start_time': datetime.now() - timedelta(days=1),
             # 'end_time': datetime.now(),
-            'range': 6,
+            'range': 12,
             }
 
 ## CloudWatch variables

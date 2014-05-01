@@ -19,68 +19,28 @@ limitations under the License.
     <meta http-equiv="refresh" content="300" >
     <script type="text/javascript" src="http://www.google.com/jsapi" ></script>
     <script type=text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
-    <script type="text/javascript">
-        google.load('visualization', '1.1', {packages: ['annotationchart', 'corechart']});
-    </script>
     <script type="text/javascript" src="js" ></script>
     <script type="text/javascript">
-        function handleProcessingTime(response) {
-            if (response.isError()) {
-                return;
-            }
-        
-            var data = response.getDataTable();
-            var visualization = new google.visualization.AnnotationChart(document.getElementById('processingTime'));
-            visualization.draw(data, {  'displayAnnotations': false,
-                                        'displayZoomButtons': false,
-                                        'min': 0,
-                                        'allValuesSuffix': 'ms'})
+        google.load('visualization', '1.1', {packages: ['annotationchart', 'corechart']});
+
+        function registerCharts() {
+            registerInstanceChart( "processingTime", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'allValuesSuffix': 'ms'} );
+            registerInstanceChart( "threads", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'max': 100} );
+            registerInstanceChart( "cpu", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'max': 100} );
         }
 
-        function handleThreads(response) {
-            if (response.isError()) {
-                return;
-            }
-
-            var data = response.getDataTable();
-            var visualization = new google.visualization.AnnotationChart(document.getElementById('threads'));
-            visualization.draw(data, {  'displayAnnotations': false,
-                                        'displayZoomButtons': false,
-                                        'min': 0,
-                                        'max': 1,
-                                        'allValuesSuffix': '%'})
-        }
-
-        function handleCPU(response) {
-            if (response.isError()) {
-                return;
-            }
-
-            var data = response.getDataTable();
-            var visualization = new google.visualization.AnnotationChart(document.getElementById('cpu'));
-            visualization.draw(data, {  'displayAnnotations': false,
-                                        'displayZoomButtons': false,
-                                        'min': 0,
-                                        'max': 1,
-                                        'allValuesSuffix': '%'})
-        }
-
-        function drawCharts() {
-            drawInstanceChart("Learn/Instance", "AverageRequestProcessingTime", ["Average"], "Milliseconds", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", handleProcessingTime);
-            drawInstanceChart("Learn/Instance", "RequestThreadUtilization", ["Average"], "Percent", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", handleThreads);
-            drawInstanceChart("AWS/EC2", "CPUUtilization", ["Average"], "Percent", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", handleCPU);
-            //drawGroupChart("Learn/Auto Scaling", "GroupRequestThreadUtilization", "Percent", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", handleThreads);
-        }
-
-        google.setOnLoadCallback(drawCharts);
+        google.setOnLoadCallback(registerCharts);
     </script>
   </head>
   <body style="font-family: Arial;border: 0 none;">
     <h4>Average Request Processing Time</h4>
-    <div id="processingTime" style="width: 600px; height: 300px;"></div>
+    <div id="processingTime" style="width: 600px; height: 300px;"
+         cumulus:namespace="Learn/Instance" cumulus:metric="AverageRequestProcessingTime" cumulus:statistics="Average" cumulus:unit="Milliseconds"></div>
     <h4>Request Thread Utilization</h4>
-    <div id="threads" style="width: 600px; height: 300px;"></div>
+    <div id="threads" style="width: 600px; height: 300px;"
+         cumulus:namespace="Learn/Instance" cumulus:metric="RequestThreadUtilization" cumulus:statistics="Average" cumulus:unit="Percent"></div>
     <h4>CPU Utilization</h4>
-    <div id="cpu" style="width: 600px; height: 300px;"></div>
+    <div id="cpu" style="width: 600px; height: 300px;"
+         cumulus:namespace="AWS/EC2" cumulus:metric="CPUUtilization" cumulus:statistics="Average" cumulus:unit="Percent"></div>
   </body>
 </html>
