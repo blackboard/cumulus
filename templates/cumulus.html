@@ -27,20 +27,39 @@ limitations under the License.
             registerInstanceChart( "processingTime", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'allValuesSuffix': 'ms'} );
             registerInstanceChart( "threads", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'max': 100} );
             registerInstanceChart( "cpu", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'max': 100} );
+            registerInstanceChart( "heap", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'max': 100} );
+            registerInstanceChart( "health", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'max': 2} );
         }
 
         google.setOnLoadCallback(registerCharts);
     </script>
   </head>
   <body style="font-family: Arial;border: 0 none;">
-    <h4>Average Request Processing Time</h4>
-    <div id="processingTime" style="width: 600px; height: 300px;"
-         cumulus:namespace="Learn/Instance" cumulus:metric="AverageRequestProcessingTime" cumulus:statistics="Average" cumulus:unit="Milliseconds"></div>
-    <h4>Request Thread Utilization</h4>
-    <div id="threads" style="width: 600px; height: 300px;"
-         cumulus:namespace="Learn/Instance" cumulus:metric="RequestThreadUtilization" cumulus:statistics="Average" cumulus:unit="Percent"></div>
-    <h4>CPU Utilization</h4>
-    <div id="cpu" style="width: 600px; height: 300px;"
-         cumulus:namespace="AWS/EC2" cumulus:metric="CPUUtilization" cumulus:statistics="Average" cumulus:unit="Percent"></div>
+  <table>
+      <tr>
+          <td style="vertical-align: top">
+              <h4>Average Request Processing Time (Milliseconds)</h4>
+              <div id="processingTime" style="width: 600px; height: 300px;"
+                   cumulus:namespace="Learn/Instance" cumulus:metric="AverageRequestProcessingTime" cumulus:statistics="Average" cumulus:unit="Milliseconds"></div>
+
+              <h4>CPU Utilization (Percent)</h4>
+              <div id="cpu" style="width: 600px; height: 300px;"
+                   cumulus:namespace="AWS/EC2" cumulus:metric="CPUUtilization" cumulus:statistics="Average" cumulus:unit="Percent"></div>
+
+              <h4>Health Check Failed</h4>
+              <div id="health" style="width: 600px; height: 300px;"
+                   cumulus:namespace="Learn/Instance" cumulus:metric="HealthCheckFailed" cumulus:statistics="Average" cumulus:unit="Percent"></div>
+          </td>
+          <td style="padding-left: 20px; vertical-align: top">
+              <h4>Request Thread Utilization (Percent)</h4>
+              <div id="threads" style="width: 600px; height: 300px;"
+                   cumulus:namespace="Learn/Instance" cumulus:metric="RequestThreadUtilization" cumulus:statistics="Average" cumulus:unit="Percent"></div>
+              <h4>Heap Utilization (Percent)</h4>
+              <div id="heap" style="width: 600px; height: 300px;"
+                   cumulus:namespace="Learn/Instance" cumulus:metric="HeapUtilization" cumulus:statistics="Average" cumulus:unit="Percent"></div>
+
+          </td>
+      </tr>
+  </table>
   </body>
 </html>
