@@ -103,7 +103,7 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
         qa['start_time'] = qa['end_time'] - timedelta(hours=qa['range'])
     # If neither is specified, use range leading up to current time
     else:
-        qa['end_time'] = datetime.now()
+        qa['end_time'] = datetime.utcnow()
         qa['start_time'] = qa['end_time'] - timedelta(hours=qa['range'])
     
     if 'timezone' in qa:
