@@ -44,10 +44,17 @@ Cumulus uses a combination of DIV container attributes and a registration method
 Next, you need to register the containers:
 
         function registerCharts() {
-            registerInstanceChart( "processingTime", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", {displayZoomButtons: false, 'min': 0, 'allValuesSuffix': 'ms'} );
+            registerInstanceChart( "processingTime", "mooc-fleet98-LearnAutoScalingGroup-QS7FYOU14AVK", 
+				   {displayZoomButtons: false, 'min': 0, 'allValuesSuffix': 'ms'} );
         }
 
         google.setOnLoadCallback(registerCharts);
 
 _registerInstanceChart()_ takes three parameters:
+
+1. elementId - The ID of the element in the document that is the container for the chart. 
+2. group - The name of the Auto Scaling Group. 
+3.  options - Dictionary of options to apply to the Google chart (see Google docs about these). 
+
+Optionally, you can create a local HTML file, based on the current cumulus.html and change it there.  The file does *not* need to be hosted on the server serving the Cumulus data.
 
