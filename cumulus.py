@@ -153,6 +153,8 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
         results = c.get_metric_statistics(  args['period'], args['start_time'], args['end_time'], 
                                             args['metric'], args['namespace'], args['statistics'],
                                             args['dimensions'], args['unit'])
+
+        cherrypy.log(str(results) )
         # Format/transform results
         for d in results:
             # Convert timestamps to datetime objects
@@ -181,13 +183,19 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
         
         # Build data description and columns to be return
         description[args['prefix']+'Samples'] = ('number', args['prefix']+'Samples')
-        description[args['prefix']+'Unit'] = ('string', args['unit']) 
+
+        if args['unit'] != None:
+            description[args['prefix']+'Unit'] = ('string', args['unit'])
+
         for stat in args['statistics']:
             # If Rate is desired, update label accordingly
             if stat == 'Sum' and args['calc_rate'] == True:
                 stat = 'Rate'
             description[args['prefix']+stat] = ('number', args['prefix']+stat)
-            columns.append(args['prefix']+stat)       
+            columns.append(args['prefix']+stat)
+
+    # add a blank
+    data_map[current_timezone.localize(args['end_time'])] = {"Timestamp": current_timezone.localize(args['end_time'])}
     
     # Sort data and present    
     data = sorted(data_map.values(), key=operator.itemgetter(u'Timestamp'))
