@@ -230,6 +230,7 @@ class Script(object):
 
         template = lookup.get_template('cumulus.js')
         cherrypy.response.headers['Content-Type'] = "text/javascript"
+        cherrypy.response.headers['Cache-Control'] = "no-cache, must-revalidate"
         return template.render(groups=groups)
 
     index.exposed = True

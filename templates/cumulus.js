@@ -26,7 +26,7 @@ function drawInstanceChart(namespace, metric, statistics, unit, group, handler) 
                 "metric": metric,   // CloudWatch metric (string)
                 "unit": unit,            // CloudWatch unit (string)
                 "statistics": statistics,      // CloudWatch statistics (list of strings)
-                "period": 600,                // CloudWatch period (int)
+                "period": 60,                // CloudWatch period (int)
                 "cloudwatch_queries": queries        // (list of dictionaries)
              };
 
@@ -42,7 +42,7 @@ function drawGroupChart(namespace, metric, statistics, unit, group, handler) {
                 "metric": metric,   // CloudWatch metric (string)
                 "unit": unit,            // CloudWatch unit (string)
                 "statistics": statistics,      // CloudWatch statistics (list of strings)
-                "period": 600,                // CloudWatch period (int)
+                "period": 60,                // CloudWatch period (int)
                 "cloudwatch_queries":         // (list of dictionaries)
                 [
                     {
