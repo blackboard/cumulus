@@ -31,7 +31,7 @@ function drawInstanceChart(namespace, metric, statistics, unit, group, handler) 
              };
 
     var qs = JSON.stringify(qa);
-    var url = 'http://' + window.location.host + '/data?qs=' + qs;
+    var url = '${request_base}/data?qs=' + qs;
     var query = new google.visualization.Query(url);
     query.send(handler);
 }
@@ -53,7 +53,7 @@ function drawGroupChart(namespace, metric, statistics, unit, group, handler) {
              };
 
     var qs = JSON.stringify(qa);
-    var url = 'http://' + window.location.host + '/data?qs=' + qs;
+    var url = '${request_base}/data?qs=' + qs;
     var query = new google.visualization.Query(url);
     query.send(handler);
 }
