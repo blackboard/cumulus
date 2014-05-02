@@ -9,7 +9,7 @@ var autoScalingGroups = eval({
 % endfor
 });
 
-function drawInstanceChart(namespace, metric, statistics, unit, group, handler) {
+function drawInstanceChart(namespace, metric, statistics, unit, group, range, handler) {
     var queries = [];
     var instances = autoScalingGroups[group];
 
@@ -27,6 +27,7 @@ function drawInstanceChart(namespace, metric, statistics, unit, group, handler) 
                 "unit": unit,            // CloudWatch unit (string)
                 "statistics": statistics,      // CloudWatch statistics (list of strings)
                 "period": 60,                // CloudWatch period (int)
+                "range": range,
                 "cloudwatch_queries": queries        // (list of dictionaries)
              };
 
@@ -71,10 +72,19 @@ function registerInstanceChart(elementId, group, options) {
         visualization.draw(data, options);
     }
 
+    var range = container.getAttribute("cumulus:range");
+    if (range == null) {
+        range = 12;
+    }
+    else {
+        range = parseInt(range);
+    }
+
     drawInstanceChart(container.getAttribute("cumulus:namespace"),
                       container.getAttribute("cumulus:metric"),
                       container.getAttribute("cumulus:statistics").split(","),
                       container.getAttribute("cumulus:unit"),
                       group,
+                      range,
                       handler);
 }
