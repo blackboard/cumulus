@@ -154,7 +154,6 @@ def get_cloudwatch_data(cloudviz_query, request_id, aws_access_key_id=None, aws_
                                             args['metric'], args['namespace'], args['statistics'],
                                             args['dimensions'], args['unit'])
 
-        cherrypy.log(str(results) )
         # Format/transform results
         for d in results:
             # Convert timestamps to datetime objects
